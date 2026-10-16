@@ -37,8 +37,14 @@ This project follows a multi-phase cybersecurity lifecycle to secure Akwaaba Ste
 │   ├── Phase_2_Mitigation_Plan.md    # Vulnerability mitigation roadmap
 │   └── screenshots/                  # Before/After terminal & UI evidence
 ├── hardening/
-│   ├── os_hardening.sh               # RHEL 8.4 firewall & SSH hardening scripts
-│   ├── web_acl_hardening.sh          # POSIX ACL and directory permission scripts
-│   └── db_hardening.sql              # MariaDB user isolation & binding scripts
-├── README.md                         # Repository documentation
-└── .gitignore                        # Git ignore rules for LaTeX build artifacts
+│   ├── os_hardening.sh               # RHEL 8.4 firewall & SSH hardening script
+│   ├── web_acl_hardening.sh          # POSIX ACL and directory permission script
+│   ├── db_hardening.sql              # MariaDB user isolation & binding script
+│   └── sqli_hardening.php            # Parameterized PDO query handler (SQLi Defense)
+├── tests/
+│   ├── test_os_vulnerabilities.sh    # Audits SSH configuration & firewall rich rules
+│   ├── test_web_vulnerabilities.sh   # Audits file permissions & HTTP security headers
+│   ├── test_db_vulnerabilities.sh    # Audits MariaDB socket listening boundaries
+│   └── test_sqli_vulnerability.sh   # Probes web application endpoints for SQL Injection
+├── README.md                         # Project documentation
+└── .gitignore                        # Git ignore rules
