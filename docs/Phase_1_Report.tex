@@ -1,0 +1,176 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{float} % Ensures exact table placement using [H]
+\usepackage{hyperref}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titlespacing*{\section}{0pt}{8pt}{4pt}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+\setlist{itemsep=1pt, topsep=2pt, parsep=0pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    
+    {\Huge \bfseries PHASE 1 REPORT: \\ INFORMATION SECURITY POLICY \\ \& RISK ASSESSMENT \par}
+    \vspace{0.5cm}
+    {\Large \bfseries Akwaaba Steakhouse Enterprise Systems Infrastructure \par}
+    
+    \vspace{2cm}
+    
+    {\large \textbf{Kennesaw State University} \par}
+    {\large \textbf{IT 4883 Infrastructure Defense} \par}
+    
+    \vspace{1.5cm}
+    
+    \textbf{\Large Team Members:} \\[0.4cm]
+    {\large Sonny Wilson \par}
+    {\large Nicholas Coats \par}
+    {\large Axel Palacios \par}
+    {\large Jc Sparks \par}
+    
+    \vfill
+    
+    {\large \textbf{Date: October 2026} \par}
+    \vspace{1cm}
+\end{titlepage}
+
+\pagenumbering{arabic}
+
+\section{Project Status Update}
+
+Since the start of the semester, the team has successfully deployed, analyzed, and configured the Akwaaba Steakhouse server virtual machine environment on Red Hat Enterprise Linux (RHEL 8.4) \cite{VMConnect, AkwaabaConfig}. The team completed the baseline architectural analysis of the web application stack (Apache HTTP Server 2.4.37, MariaDB 10.6.4, and WordPress CMS), establishing GlobalProtect VPN remote administration access and verifying system user roles across the corporate HQ and store locations \cite{VMConnect, AkwaabaConfig}. Based on our preliminary discoveries, minor adjustments were made to the initial milestone schedule: task deadlines for technical file system hardening and ACL drafting were aligned directly with the NIST SP 800-30 Rev. 1 guidelines \cite{Phase1Guide, RiskGuide}.
+
+From a project management perspective, minor initial hurdles were encountered regarding remote database access. These issues were resolved through team coordination by conducting meetings and standardizing access methods. Communication and workflow across team members remain on schedule, and all Phase 1 deliverables including the Information Security Policy, Access Management Matrix, and Server Risk Assessment have been finalized in full compliance with course milestones and industry standards \cite{Phase1Guide, LiISP, RiskGuide}.
+
+\section{Phase 1 Solution Report}
+
+\subsection{Information Security Policy for Akwaaba Steakhouse}
+
+\subsubsection{General Security Policy}
+Akwaaba Steakhouse operates two dining locations (NYC, Atlanta, LA) and corporate headquarters, employing $\sim$60 personnel \cite{AkwaabaConfig}. This policy enforces administrative and technical controls to preserve the Confidentiality, Integrity, and Availability (CIA Triad) of Akwaaba's e-commerce platform and store operations \cite{AkwaabaConfig, LiISP}.
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Internet Access \& Network Use Policy:} Corporate networks and POS terminals are strictly reserved for authorized business processing; personal web browsing, streaming, and unauthorized software downloads are prohibited \cite{Phase1Guide, LiISP}. POS terminals and database subnets are logically isolated from guest Wi-Fi via firewalls and VLANs \cite{AkwaabaConfig, Phase1Guide}. Direct public SSH (Port 22) or DB access is banned; remote access requires an authenticated GlobalProtect VPN session (\texttt{vpn.kennesaw.edu}) with Multi-Factor Authentication (MFA) enabled \cite{VMConnect, Phase1Guide}.
+    \item \textbf{Email \& Electronic Communication Policy:} All corporate scheduling, customer communications, and financial correspondence must utilize company-issued email accounts \cite{Phase1Guide, LiISP}. Email gateways enforce anti-phishing, DKIM, and SPF protocols; staff are strictly forbidden from opening unverified attachments \cite{Phase1Guide, LiISP}. Transmitting primary account numbers (PAN) or unencrypted employee PII over email is strictly prohibited \cite{Phase1Guide, LiISP}.
+    \item \textbf{Bring Your Own Device (BYOD) Policy:} Personal employee devices are strictly banned from connecting to internal POS networks or backend database subnets \cite{AkwaabaConfig, Phase1Guide}. Corporate access on personal mobile devices (HQ staff only) requires registration in Enterprise Mobile Device Management (MDM) with mandatory full-disk encryption and remote wipe capabilities \cite{Phase1Guide}.
+    \item \textbf{Password \& Authentication Controls:} All passwords must be at least 14 characters, combine uppercase, lowercase, numeric, and special symbols, and rotate every 90 days \cite{Phase1Guide}. Default administrative passwords (e.g., initial MariaDB passwords) must be changed immediately upon installation \cite{AkwaabaConfig, Phase1Guide}. Accounts lock for 30 minutes after 5 failed login attempts \cite{Phase1Guide}.
+\end{itemize}
+
+\subsubsection{Access Management Policy}
+Akwaaba enforces Role-Based Access Control (RBAC) and Least Privilege principles \cite{Phase1Guide, LiISP}. System permissions strictly correspond to job function, governed by the Bell-LaPadula confidentiality model (Simple Security: \textit{No Read Up}; $\star$-Property: \textit{No Write Down}) \cite{LiISP}.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{Akwaaba Role-Based Access Control (RBAC) \& Resource Matrix}
+\begin{tabularx}{\textwidth}{l c X X X}
+\toprule
+\textbf{Role / Position} & \textbf{Count} & \textbf{Assigned Systems \& Scope} & \textbf{Access Level \& Privileges} & \textbf{Authentication Basis} \\
+\midrule
+Owner / Executive & 1 & Corporate Financials, Sales Reports & Read-Only access to aggregate revenue logs \cite{AkwaabaConfig}. & Corporate Login + MFA \cite{Phase1Guide} \\
+General Manager & 3 & Store POS, Local Inventory, Schedules & Read/Write to local store POS \& schedules \cite{AkwaabaConfig}. & Local POS PIN + Password \cite{Phase1Guide} \\
+Waiters / Host / Bartender & $\sim$50 & Front-of-House POS Terminals & Transactional execute-only (Order entry/billing) \cite{AkwaabaConfig}. & Unique Employee ID / PIN \cite{Phase1Guide} \\
+Cooks / Bussers & $\sim$15 & Kitchen Display System (KDS) & Read-Only access to active order queue \cite{AkwaabaConfig}. & Terminal ID \cite{Phase1Guide} \\
+Chief Accountant & 1 & MariaDB, Financial Ledgers, Payroll & Read/Write access to accounting databases \cite{AkwaabaConfig}. & Corporate Domain + MFA \cite{Phase1Guide} \\
+HR Agents & 2 & HR Portal, Employee PII Records & Read/Write access to personnel/payroll files \cite{AkwaabaConfig}. & Corporate Domain + MFA \cite{Phase1Guide} \\
+Web Developer & 1 & Web Root (\texttt{/var/www/html}), CMS & Read/Write access to CMS (\texttt{wp-admin}); restricted shell \cite{AkwaabaConfig}. & SSH Key + MFA \cite{VMConnect, Phase1Guide} \\
+System Administrator & 1 & RHEL OS, Apache, MariaDB Engine & Full Root / Sudo administrative control \cite{AkwaabaConfig}. & SSH Key + VPN + MFA \cite{VMConnect, Phase1Guide} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsubsection{Technical System Hardening \& ACL Implementation}
+POSIX permissions and Linux File System Access Control Lists (ACLs) enforce strict boundary isolation on the RHEL 8.4 server \cite{AkwaabaConfig, LiISP}:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Web Root Hardening (\texttt{/var/www/html/home}):} Ownership set to \texttt{apache:apache} with directory permissions \texttt{750} (\texttt{rwxr-x---}) and file permissions \texttt{640} (\texttt{rw-r-----}) \cite{AkwaabaConfig, LiISP}.
+    \item \textbf{WordPress Configuration (\texttt{wp-config.php}):} Permissions restricted to \texttt{600} (\texttt{rw-------}) owned by \texttt{apache:apache} \cite{AkwaabaConfig, LiISP}.
+    \item \textbf{PHP-FPM Process Isolation (\texttt{/etc/php-fpm.d/www.conf}):} Execution restricted via \texttt{listen.acl\_users = apache} \cite{AkwaabaConfig}.
+    \item \textbf{Granular Developer ACLs:} Enforced via POSIX ACL: \texttt{sudo setfacl -R -m u:webdev:rwx /var/www/html/home} \cite{LiISP}.
+\end{enumerate}
+
+\subsection{Risk Assessment on the Akwaaba Server}
+
+\subsubsection{Overall Evaluation of Server Infrastructure}
+Akwaaba Steakhouse operates a centralized e-commerce and operational server environment hosted on RHEL 8.4 \cite{AkwaabaConfig}. The technical stack consists of Apache HTTP Server 2.4.37, MariaDB Database 10.6.4, and a WordPress CMS instance (\texttt{/var/www/html/home}) supporting web e-commerce operations and multi-location dining services \cite{AkwaabaConfig}. Remote administration is conducted via SSH (Port 22) restricted through a GlobalProtect VPN gateway (\texttt{vpn.kennesaw.edu}) \cite{VMConnect}. Baseline security evaluation reveals initial configuration exposures in \texttt{wp-config.php}, overly broad default PHP-FPM execution permissions (\texttt{listen.acl\_users = apache, nginx}), and administrative backend login portals (\texttt{/wp-admin}) relying on static default credentials (\texttt{Kennesaw123!}) lacking MFA and rate-limiting \cite{AkwaabaConfig, RiskSlides}.
+
+\subsubsection{Important Assets to Protect}
+In accordance with NIST SP 800-30 Rev. 1, enterprise assets are categorized into Digital and People assets \cite{AkwaabaConfig, RiskGuide}:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Digital Assets:} Customer Payment \& Transaction Data (MariaDB database tables, payment logs); E-Commerce Application Platform (WordPress web files, site configurations, Apache server); Server Operating System \& Infrastructure (RHEL 8.4 host, system root, SSH service, PHP-FPM engine); Corporate Financial \& HR Records (general ledgers, payroll profiles, employee PII) \cite{AkwaabaConfig}.
+    \item \textbf{People Assets:} Corporate Administrative Staff (1 Owner, 1 Chief Accountant, 2 HR Agents, 1 Web Developer); Store Operational Personnel ($\sim$50 store staff including General Managers, Waiters, Hosts, Bartenders, and Kitchen Cooks) \cite{AkwaabaConfig}.
+\end{itemize}
+
+\subsubsection{Risk Assessment Matrix}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Akwaaba Enterprise Server Risk Assessment Matrix}
+\begin{tabular}{|L{3.2cm}|L{4.2cm}|L{4.0cm}|L{4.2cm}|}
+\hline
+\textbf{Assets} & \textbf{Threats / Risks} & \textbf{Possibilities of Successful Compromise} & \textbf{Damage if Asset Compromised} \\ \hline
+
+\textbf{Customer Payment \& Transaction Data} \newline \textit{(Digital Asset)} & 
+\textbf{SQL Injection (SQLi) / DB Breach:} Exploitation of unvalidated web inputs or unpatched plugins to exfiltrate cardholder logs \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Moderate (5)} \newline High if web inputs remain unvalidated and MariaDB default configurations remain exposed \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Severe / Critical (10)} \newline Severe PCI-DSS fines, brand destruction, financial liability, and legal lawsuits \cite{Phase1Guide, RiskSlides}. \\ \hline
+
+\textbf{E-Commerce Platform \& Web Server} \newline \textit{(Digital Asset)} & 
+\textbf{Brute-Force / Credential Stuffing:} Automated login attacks against \texttt{/wp-admin} exploiting weak passwords (\texttt{Kennesaw123!}) to deface the site \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{High (8)} \newline Publicly accessible admin endpoints are continuously targeted by automated threat bots \cite{RiskSlides, RiskGuide}. & 
+\textbf{High (8)} \newline E-commerce downtime, lost online sales revenue, site defacement, and customer loss \cite{Phase1Guide, RiskSlides}. \\ \hline
+
+\textbf{Server Host OS \& Infrastructure} \newline \textit{(Digital Asset)} & 
+\textbf{Privilege Escalation \& SSH Takeover:} Local escalation via world-readable configuration files (\texttt{wp-config.php}) leading to root takeover \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Moderate (5)} \newline Requires initial VPN/web foothold, but high success if permissions remain unhardened (\texttt{644}) \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Catastrophic (10)} \newline Complete loss of system control, ransomware deployment, malicious wiper execution, and shutdown \cite{Phase1Guide, RiskSlides}. \\ \hline
+
+\textbf{Corporate Financial \& HR Data} \newline \textit{(Digital Asset)} & 
+\textbf{Unauthorized Access / Exfiltration:} Internal privilege abuse or exfiltration of unencrypted accounting ledgers and employee PII \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Low to Moderate (2-5)} \newline Dependent on backend database user privilege separation and network ACL enforcement \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{High (8)} \newline Regulatory privacy fines, employee identity theft, payroll fraud, and internal disruption \cite{Phase1Guide, RiskSlides}. \\ \hline
+
+\textbf{Administrative Staff \& Store Personnel} \newline \textit{(People Asset)} & 
+\textbf{Spear-Phishing / Social Engineering:} Targeted email phishing directed at HQ staff to harvest credentials or deploy malware \cite{AkwaabaConfig, RiskSlides}. & 
+\textbf{Moderate (5)} \newline Human error remains a persistent threat vector across corporate email channels \cite{RiskSlides, RiskGuide}. & 
+\textbf{Moderate to High (5-8)} \newline Secondary credential theft, compromised financial workflows, and network entry vector \cite{Phase1Guide, RiskSlides}. \\ \hline
+\end{tabular}
+\end{table}
+
+\newpage
+
+\begin{thebibliography}{99}
+
+\bibitem{VMConnect}
+Instructions Connecting to VM, Kennesaw State University, Fall 2026.
+
+\bibitem{AkwaabaConfig}
+VM Server Configuration Template 2 Akwaaba v2, Kennesaw State University, Fall 2026.
+
+\bibitem{Phase1Guide}
+IT 4883 Infrastructure Defense - Cybersecurity Server Hardening Draft 1 Guide, Fall 2026.
+
+\bibitem{LiISP}
+L. Li, ``Information Security Policy \& Access Control,'' IT 6823/4883 Lecture Slides, Kennesaw State University, Fall 2026.
+
+\bibitem{RiskSlides}
+L. Li, ``Risk Management,'' IT 6823/4883 Lecture Slides, Kennesaw State University, Fall 2026.
+
+\bibitem{RiskGuide}
+Joint Task Force Transformation Initiative, \textit{Guide for Conducting Risk Assessments}, NIST Special Publication 800-30, Rev. 1, Sep. 2012.
+
+\end{thebibliography}
+
+\end{document}
