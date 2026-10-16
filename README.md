@@ -6,8 +6,8 @@ An enterprise cybersecurity server hardening and risk mitigation project for **A
 
 This project follows a multi-phase cybersecurity lifecycle to secure Akwaaba Steakhouse’s e-commerce and point-of-sale (POS) server environment:
 
-1. **Draft 1 – Risk Assessment & Baseline Policy:** Overall infrastructure evaluation, asset identification (digital and personnel), threat modeling, and a NIST SP 800-30 Rev. 1 risk assessment matrix.
-2. **Draft 2 – Security Program Plan & Mitigation:** Development of a comprehensive Information Security Policy (ISP), Role-Based Access Control (RBAC) matrix, POSIX File ACL rules, and a targeted vulnerability mitigation roadmap.
+1. **Phase 1 – Risk Assessment & Baseline Policy:** Overall infrastructure evaluation, asset identification (digital and personnel), threat modeling, and a NIST SP 800-30 Rev. 1 risk assessment matrix.
+2. **Phase 2 – Security Program Plan & Mitigation:** Development of a comprehensive Information Security Policy (ISP), Role-Based Access Control (RBAC) matrix, POSIX File ACL rules, and a targeted vulnerability mitigation roadmap.
 3. **Final Implementation & Report:** Execution of server hardening scripts, DISA STIG compliance checks, Multi-Factor Authentication (MFA) deployment, and before-and-after screenshot validation.
 
 ##  Team Information
